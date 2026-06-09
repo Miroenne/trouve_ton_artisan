@@ -2,11 +2,14 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+const DB = require('./repositories/manage_Db.js') 
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
 var app = express();
+
+DB.initDb();
 
 app.use(logger('dev'));
 app.use(express.json());
