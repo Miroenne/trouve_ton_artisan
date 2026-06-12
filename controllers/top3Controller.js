@@ -1,5 +1,12 @@
 const top3Services = require('../services/top3Services')
 
+/**
+ * Handle the HTTP request that returns the featured top three artisans.
+ *
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @returns {Promise<void>} Sends a JSON response with the featured artisans or an error payload.
+ */
 exports.getTop3Controller = async (req, res) => {
 
     try {

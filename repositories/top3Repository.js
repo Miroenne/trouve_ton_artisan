@@ -2,6 +2,11 @@ const fs = require('fs/promises');
 const path = require('path');
 const connection = require('../db/connect.js')
 
+/**
+ * Execute the SQL script that selects the featured top three artisans.
+ *
+ * @returns {Promise<Array>} Raw MySQL result returned by `mysql2`.
+ */
 exports.get = async () => {
     
     const connexion = await connection.initConnect(false);

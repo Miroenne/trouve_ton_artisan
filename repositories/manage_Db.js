@@ -6,7 +6,11 @@ const connection = require('../db/connect.js')
 
 
 
-
+/**
+ * Create the application database schema from the initialization script.
+ *
+ * @returns {Promise<void>} Resolves when the schema script has been executed.
+ */
 createDb = async () => {
     
     const filePath = path.join(__dirname, '../db/scripts/initialize_DB.sql');
@@ -23,9 +27,14 @@ createDb = async () => {
         console.error(error);
         throw error;
     }
-  
+
 }
 
+/**
+ * Import seed data when the categories table is empty.
+ *
+ * @returns {Promise<void>} Resolves when seed data has been checked or imported.
+ */
 dataImport = async () => {
     const filePath = path.join(__dirname, '../db/scripts/import.sql')
 
@@ -47,6 +56,11 @@ dataImport = async () => {
     }
 }
 
+/**
+ * Execute and log the SQL query used to retrieve the featured top three artisans.
+ *
+ * @returns {Promise<void>} Resolves when the query has been executed.
+ */
 exports.top_3 = async () => {
     const filePath = path.join(__dirname, '../db/scripts/top_3.sql')
 
@@ -65,6 +79,11 @@ exports.top_3 = async () => {
     }
 }
 
+/**
+ * Initialize the database schema and seed data required by the API.
+ *
+ * @returns {Promise<void>} Resolves when database initialization is complete.
+ */
 exports.initDb = async () => {
     await createDb();
     await dataImport();    
