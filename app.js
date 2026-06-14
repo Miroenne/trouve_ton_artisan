@@ -18,8 +18,19 @@ var app = express();
 DB.initDb();
 
 app.use(cors({
-    origin: '',
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    exposedHeaders: ["Authorization"],
+    origin : (origin, callback) => {
+
+        /*const allowedOrigin = process.env.ALLOWED_ORIGIN;*/
+        const localRegex = /^http:\/\/(localhost|127\.0\.0\.1):\d+$/;
+        /*console.log(ALLOWED_ORIGIN)*/
+
+        if(!origin || localRegex.test(origin) /*|| origin === allowedOrigin*/){
+            return callback(null, true);
+        }
+
+        return callback(new Error('Origin non authorisée par CORS'));
+    },
     credentials: true
 }));
 
