@@ -1,4 +1,4 @@
-const requestRepository = require('../repositories/categoriresRepository')
+const requestRepository = require('../repositories/categoriesRepository')
 const buildError = require('../utils/errorFactory');
 
 /**

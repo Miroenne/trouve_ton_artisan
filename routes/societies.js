@@ -4,33 +4,53 @@ const societiesController = require('../controllers/societiesController');
 
 /**
  * @swagger
- * /societies/{nom}:
- *   get:
- *     summary: Retrieve artisans matching a society name.
- *     description: Searches artisans by name using a case-insensitive partial match.
- *     tags:
- *       - Societies
- *     parameters:
- *       - in: path
- *         name: nom
- *         required: true
- *         schema:
+ * tags:
+ *   - name: Societies
+ *     description: Recherche et affichage des artisans.
+ *
+ * components:
+ *   schemas:
+ *     SocietyCard:
+ *       type: object
+ *       properties:
+ *         nom:
  *           type: string
- *         description: Society or artisan name to search for.
- *     responses:
- *       200:
- *         description: Matching societies were retrieved successfully.
- *       400:
- *         description: Matching societies could not be retrieved.
- */
-router.get('/:nom', societiesController.getSocietyByName);
-
-/**
- * @swagger
+ *           example: "Boucherie Dumont"
+ *         note:
+ *           type: number
+ *           format: float
+ *           example: 4.5
+ *         nom_Ville:
+ *           type: string
+ *           example: "Lyon"
+ *         nom_Spécialité:
+ *           type: string
+ *           example: "Boucher"
+ *     SocietyDetails:
+ *       allOf:
+ *         - $ref: '#/components/schemas/SocietyCard'
+ *         - type: object
+ *           properties:
+ *             email:
+ *               type: string
+ *               format: email
+ *               example: "contact@example.com"
+ *             photo_url:
+ *               type: string
+ *               format: uri
+ *               example: "https://example.com/photo.jpg"
+ *             A_propos:
+ *               type: string
+ *               example: "Artisan local spécialisé depuis 10 ans."
+ *             site_Web:
+ *               type: string
+ *               format: uri
+ *               example: "https://example.com"
+ *
  * /societies/categorized/{category}:
  *   get:
- *     summary: Retrieve artisans by category.
- *     description: Searches artisans whose specialty belongs to the requested category.
+ *     summary: Recherche les artisans d'une catégorie.
+ *     description: Récupère les artisans dont la spécialité appartient à la catégorie demandée.
  *     tags:
  *       - Societies
  *     parameters:
@@ -39,13 +59,48 @@ router.get('/:nom', societiesController.getSocietyByName);
  *         required: true
  *         schema:
  *           type: string
- *         description: Category name to filter artisans by.
+ *         description: Nom ou fragment de nom de la catégorie.
  *     responses:
  *       200:
- *         description: Societies were retrieved successfully for the category.
+ *         description: Artisans de la catégorie récupérés avec succès.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/SocietyCard'
  *       400:
- *         description: Societies could not be retrieved for the category.
+ *         description: Impossible de récupérer les artisans de la catégorie.
  */
 router.get('/categorized/:category', societiesController.getSocietiesByCategory);
+
+/**
+ * @swagger
+ * /societies/{nom}:
+ *   get:
+ *     summary: Recherche un artisan par nom.
+ *     description: Recherche les artisans dont le nom correspond partiellement au paramètre fourni.
+ *     tags:
+ *       - Societies
+ *     parameters:
+ *       - in: path
+ *         name: nom
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Nom ou fragment de nom de l'artisan recherché.
+ *     responses:
+ *       200:
+ *         description: Artisans correspondants récupérés avec succès.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/SocietyDetails'
+ *       400:
+ *         description: Impossible de récupérer les artisans correspondants.
+ */
+router.get('/:nom', societiesController.getSocietyByName);
 
 module.exports = router;

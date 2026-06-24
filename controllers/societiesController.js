@@ -10,7 +10,6 @@ const societiesServices = require('../services/societiesServices');
 exports.getSocietiesByCategory = async (req, res) => {
 
     const category = req.params.category;
-    console.log("Entrée dans le contrôleur")
     try {
         const societies = await societiesServices.getSocietiesByCategory(category);
         res.status(200).json(societies);
@@ -33,8 +32,6 @@ exports.getSocietiesByCategory = async (req, res) => {
 exports.getSocietyByName = async (req, res) => {
 
     const societyName = req.params.nom;
-
-    console.log(societyName)
 
     try {
         const society = await societiesServices.getSocietyByName(societyName);

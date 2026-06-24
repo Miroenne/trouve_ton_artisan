@@ -18,11 +18,8 @@ createDb = async () => {
     try {
         const sql = await fs.readFile(filePath, 'utf-8');
         const connexion = await connection.initConnect(true);
-        console.log("Connected");
         await connexion.query(sql);
-        console.log('Database OK')
         connexion.end();
-        console.log("Disconnected");
     } catch (error) {
         console.error(error);
         throw error;
@@ -41,15 +38,12 @@ dataImport = async () => {
     try {
         const sql = await fs.readFile(filePath, 'utf-8');
         const connexion = await connection.initConnect(true);
-        console.log('connected')
         await connexion.changeUser({database: process.env.DATABASE})
         const [rows] = await connexion.query("SELECT EXISTS(SELECT 1 FROM Catégories LIMIT 1) AS hasdata");
         if (!rows[0].hasdata) {
             await connexion.query(sql);
-            console.log('Data import done');
         }        
         connexion.end();
-        console.log('Disconnected');
     } catch(error) {
         console.error(error);
         throw error;
@@ -68,11 +62,8 @@ exports.top_3 = async () => {
         const sql = await fs.readFile(filePath, 'utf-8');        
         const connexion = await connection.initConnect(true);
         await connexion.changeUser({database: process.env.DATABASE})
-        console.log('connected')        
         const top = await connexion.query(sql);
-        console.log(top);
         connexion.end();
-        console.log('Disconnected');
     } catch(error) {
         console.error(error);
         throw error;

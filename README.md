@@ -1,12 +1,30 @@
-# Trouve Ton Artisan API
+# Trouve Ton Artisan - API
 
-Express API used by the "Trouve Ton Artisan" project to expose artisan categories, artisan search results, and the featured top three artisans.
+API Express utilisée par le projet "Trouve Ton Artisan" pour exposer les catégories, les recherches d'artisans et les trois artisans mis en avant.
 
-## Requirements
+## Fonctionnalités
+
+- Initialisation automatique de la base de données au démarrage.
+- Import des données de départ si la table des catégories est vide.
+- Récupération des catégories.
+- Récupération des trois artisans du mois.
+- Recherche d'artisans par nom.
+- Recherche d'artisans par catégorie.
+
+## Technologies
+
+- Node.js
+- Express
+- MySQL avec `mysql2`
+- CORS
+- Nodemon
+- Env-cmd
+
+## Prérequis
 
 - Node.js
 - npm
-- A MySQL-compatible database
+- Une base MySQL compatible
 
 ## Installation
 
@@ -14,9 +32,9 @@ Express API used by the "Trouve Ton Artisan" project to expose artisan categorie
 npm install
 ```
 
-## Environment Variables
+## Variables d'Environnement
 
-The API reads its database configuration from environment variables.
+L'API lit la configuration de connexion depuis les variables d'environnement.
 
 ```env
 HOST=127.0.0.1
@@ -24,33 +42,34 @@ DB_PORT=4000
 TIDB_USER=root
 PASSWORD=
 DATABASE=your_database_name
+PORT=3000
 ```
 
-When a variable is missing, the connection layer uses the fallback values defined in `db/connect.js`.
+Si une variable est absente, `db/connect.js` utilise les valeurs par défaut présentes dans le code.
 
-## Available Scripts
+## Scripts Disponibles
 
 ```bash
 npm start
 ```
 
-Starts the API with `node ./bin/www`.
+Démarre l'API avec `node ./bin/www`.
 
 ```bash
 npm run dev
 ```
 
-Starts the API with `nodemon` and loads `./env/.env.dev`.
+Démarre l'API avec `nodemon` et charge `./env/.env.dev`.
 
 ```bash
 npm run prod
 ```
 
-Starts the API with `nodemon` and loads `./env/.env.prod`.
+Démarre l'API avec `nodemon` et charge `./env/.env.prod`.
 
-## API Base URL
+## URL de Base
 
-By default, the server listens on port `3000`.
+Par défaut, le serveur écoute sur le port `3000`.
 
 ```txt
 http://localhost:3000
@@ -58,57 +77,27 @@ http://localhost:3000
 
 ## Endpoints
 
-### Top 3
+| Méthode | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/top3` | Retourne les trois artisans du mois. |
+| `GET` | `/categories` | Retourne toutes les catégories. |
+| `GET` | `/societies/{nom}` | Recherche des artisans par nom. |
+| `GET` | `/societies/categorized/{category}` | Recherche des artisans par catégorie. |
 
-```http
-GET /top3
-```
+## Documentation JSDoc et Swagger
 
-Returns the featured top three artisans.
+Les routes contiennent des blocs `@swagger` compatibles avec une génération OpenAPI via `swagger-jsdoc`.
 
-### Categories
+Les autres couches contiennent du JSDoc classique :
 
-```http
-GET /categories
-```
+- controllers : objets Express `Request` et `Response`, réponse JSON envoyée ;
+- services : paramètres métier, valeurs retournées, erreurs possibles ;
+- repositories : paramètres SQL et résultats attendus ;
+- utilitaires : rôle de la fonction et valeur retournée.
 
-Returns every artisan category.
+Swagger UI n'est pas encore branché dans l'application. Pour exposer une documentation interactive, il faudra ajouter `swagger-jsdoc` et `swagger-ui-express`, puis configurer `app.js` pour lire les fichiers du dossier `routes`.
 
-### Societies by Name
-
-```http
-GET /societies/{nom}
-```
-
-Returns artisans whose name matches the `nom` path parameter.
-
-Example:
-
-```http
-GET /societies/boucherie
-```
-
-### Societies by Category
-
-```http
-GET /societies/categorized/{category}
-```
-
-Returns artisans whose specialty belongs to the requested category.
-
-Example:
-
-```http
-GET /societies/categorized/batiment
-```
-
-## Documentation Comments
-
-The route files include Swagger-compatible `@swagger` blocks. The controller, service, repository, database, and utility layers include JSDoc comments to describe their parameters, return values, and errors.
-
-Swagger UI is not currently wired into the application. To expose interactive documentation later, install and configure packages such as `swagger-jsdoc` and `swagger-ui-express`, then point `swagger-jsdoc` to the route files.
-
-## Project Structure
+## Structure
 
 ```txt
 API/
@@ -122,6 +111,17 @@ API/
 └── utils/
 ```
 
-## Database Initialization
+## Initialisation de la Base de Données
 
-At startup, `app.js` calls `DB.initDb()`. This initializes the database schema and imports seed data when needed, using the SQL scripts stored in `db/scripts`.
+Au démarrage, `app.js` appelle `DB.initDb()`.
+
+Cette fonction :
+
+1. exécute `db/scripts/initialize_DB.sql` pour créer le schéma ;
+2. vérifie si la table `Catégories` contient déjà des données ;
+3. exécute `db/scripts/import.sql` si les données de départ sont absentes.
+
+## Points d'Attention Connus
+
+- Le fichier `repositories/categoriresRepository.js` contient une faute de frappe dans son nom : `categorires` au lieu de `categories`.
+- `package.json` contient `"main": "._app.js"`, probablement une faute de frappe pour `app.js`.

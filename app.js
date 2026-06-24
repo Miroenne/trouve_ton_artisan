@@ -23,7 +23,6 @@ app.use(cors({
 
         /*const allowedOrigin = process.env.ALLOWED_ORIGIN;*/
         const localRegex = /^http:\/\/(localhost|127\.0\.0\.1):\d+$/;
-        /*console.log(ALLOWED_ORIGIN)*/
 
         if(!origin || localRegex.test(origin) /*|| origin === allowedOrigin*/){
             return callback(null, true);

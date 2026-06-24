@@ -10,8 +10,6 @@ const buildError = require('../utils/errorFactory');
  */
 exports.getSocietiesByCategory = async (category) => {
 
-    console.log("Entrée dans le service")
-
     const societies = await societiesRepository.getSocietiesByCategory(category);
     if (societies) {
         return societies;
@@ -30,11 +28,7 @@ exports.getSocietiesByCategory = async (category) => {
  */
 exports.getSocietyByName = async (value) => {
 
-    console.log(value);
-
     const name = value.trim().toLowerCase();
-
-    console.log(name)
 
     const society = await societiesRepository.getSocietyByName(name);
     if (society) {
