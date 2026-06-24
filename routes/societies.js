@@ -47,6 +47,16 @@ const societiesController = require('../controllers/societiesController');
  *               format: uri
  *               example: "https://example.com"
  *
+ * /societies:
+ *   get:
+ *     summary: Retourne tous les artisans.
+ *     tags:
+ *       - Societies
+ *   post:
+ *     summary: Crée un artisan.
+ *     tags:
+ *       - Societies
+ *
  * /societies/categorized/{category}:
  *   get:
  *     summary: Recherche les artisans d'une catégorie.
@@ -72,7 +82,29 @@ const societiesController = require('../controllers/societiesController');
  *       400:
  *         description: Impossible de récupérer les artisans de la catégorie.
  */
+router.get('/', societiesController.getAllSocieties);
+router.post('/', societiesController.createSociety);
 router.get('/categorized/:category', societiesController.getSocietiesByCategory);
+
+/**
+ * @swagger
+ * /societies/id/{id}:
+ *   get:
+ *     summary: Retourne un artisan par identifiant.
+ *     tags:
+ *       - Societies
+ *   put:
+ *     summary: Met à jour un artisan.
+ *     tags:
+ *       - Societies
+ *   delete:
+ *     summary: Supprime un artisan.
+ *     tags:
+ *       - Societies
+ */
+router.get('/id/:id', societiesController.getSocietyById);
+router.put('/id/:id', societiesController.updateSociety);
+router.delete('/id/:id', societiesController.deleteSociety);
 
 /**
  * @swagger

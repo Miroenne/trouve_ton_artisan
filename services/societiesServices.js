@@ -2,6 +2,13 @@ const societiesRepository = require('../repositories/societiesRepository')
 const buildError = require('../utils/errorFactory');
 
 /**
+ * Retrieve all societies.
+ *
+ * @returns {Promise<Array>} Society rows returned by the repository.
+ */
+exports.getAllSocieties = async () => societiesRepository.getAll();
+
+/**
  * Retrieve societies that belong to a category.
  *
  * @param {string} category - Category name or partial category name.
@@ -37,4 +44,69 @@ exports.getSocietyByName = async (value) => {
         throw buildError(`Society not found`, 404);
     }
 
+};
+
+/**
+ * Retrieve one society by id.
+ *
+ * @param {number} id - Artisan identifier.
+ * @returns {Promise<object>} Society row returned by the repository.
+ * @throws {Error & {code: number}} Throws when no society matches the id.
+ */
+exports.getSocietyById = async (id) => {
+    const society = await societiesRepository.getById(id);
+
+    if (!society) {
+        throw buildError('Society not found', 404);
+    }
+
+    return society;
+};
+
+/**
+ * Create one society.
+ *
+ * @param {object} payload - Artisan data.
+ * @returns {Promise<object>} Created society.
+ * @throws {Error & {code: number}} Throws when required fields are missing.
+ */
+exports.createSociety = async (payload) => {
+    if (!payload.nom || !payload.email || payload.note === undefined) {
+        throw buildError('Society name, email and note are required', 400);
+    }
+
+    return societiesRepository.create(payload);
+};
+
+/**
+ * Update one society.
+ *
+ * @param {number} id - Artisan identifier.
+ * @param {object} payload - Artisan data.
+ * @returns {Promise<object>} Updated society.
+ * @throws {Error & {code: number}} Throws when no society matches the id.
+ */
+exports.updateSociety = async (id, payload) => {
+    const society = await societiesRepository.update(id, payload);
+
+    if (!society) {
+        throw buildError('Society not found', 404);
+    }
+
+    return society;
+};
+
+/**
+ * Delete one society.
+ *
+ * @param {number} id - Artisan identifier.
+ * @returns {Promise<void>} Resolves when the society is deleted.
+ * @throws {Error & {code: number}} Throws when no society matches the id.
+ */
+exports.deleteSociety = async (id) => {
+    const isDeleted = await societiesRepository.remove(id);
+
+    if (!isDeleted) {
+        throw buildError('Society not found', 404);
+    }
 };

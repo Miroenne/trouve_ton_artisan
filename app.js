@@ -3,6 +3,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const DB = require('./repositories/manage_Db.js') 
+const { sequelize } = require('./models');
 const cors = require('cors')
 
 var indexRouter = require('./routes/index');
@@ -15,7 +16,11 @@ var app = express();
 /**
  * Initialize the database before the API starts handling incoming requests.
  */
-DB.initDb();
+DB.initDb()
+    .then(() => sequelize.authenticate())
+    .catch((error) => {
+        console.error('Erreur lors de l initialisation de la base de données', error);
+    });
 
 app.use(cors({
     exposedHeaders: ["Authorization"],

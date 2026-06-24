@@ -36,5 +36,26 @@ const categoriesController = require('../controllers/categoriesController');
  *         description: Impossible de récupérer les catégories.
  */
 router.get('/', categoriesController.getAllCategoriesController);
+router.post('/', categoriesController.createCategoryController);
+
+/**
+ * @swagger
+ * /categories/{id}:
+ *   get:
+ *     summary: Retourne une catégorie par identifiant.
+ *     tags:
+ *       - Categories
+ *   put:
+ *     summary: Met à jour une catégorie.
+ *     tags:
+ *       - Categories
+ *   delete:
+ *     summary: Supprime une catégorie.
+ *     tags:
+ *       - Categories
+ */
+router.get('/:id', categoriesController.getCategoryByIdController);
+router.put('/:id', categoriesController.updateCategoryController);
+router.delete('/:id', categoriesController.deleteCategoryController);
 
 module.exports = router;

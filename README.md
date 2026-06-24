@@ -15,6 +15,7 @@ API Express utilisée par le projet "Trouve Ton Artisan" pour exposer les catég
 
 - Node.js
 - Express
+- Sequelize
 - MySQL avec `mysql2`
 - CORS
 - Nodemon
@@ -81,6 +82,15 @@ http://localhost:3000
 | --- | --- | --- |
 | `GET` | `/top3` | Retourne les trois artisans du mois. |
 | `GET` | `/categories` | Retourne toutes les catégories. |
+| `POST` | `/categories` | Crée une catégorie. |
+| `GET` | `/categories/{id}` | Retourne une catégorie par identifiant. |
+| `PUT` | `/categories/{id}` | Met à jour une catégorie. |
+| `DELETE` | `/categories/{id}` | Supprime une catégorie. |
+| `GET` | `/societies` | Retourne tous les artisans. |
+| `POST` | `/societies` | Crée un artisan. |
+| `GET` | `/societies/id/{id}` | Retourne un artisan par identifiant. |
+| `PUT` | `/societies/id/{id}` | Met à jour un artisan. |
+| `DELETE` | `/societies/id/{id}` | Supprime un artisan. |
 | `GET` | `/societies/{nom}` | Recherche des artisans par nom. |
 | `GET` | `/societies/categorized/{category}` | Recherche des artisans par catégorie. |
 
@@ -94,6 +104,8 @@ Les autres couches contiennent du JSDoc classique :
 - services : paramètres métier, valeurs retournées, erreurs possibles ;
 - repositories : paramètres SQL et résultats attendus ;
 - utilitaires : rôle de la fonction et valeur retournée.
+
+Les repositories utilisent maintenant les modèles Sequelize situés dans `models/`.
 
 Swagger UI n'est pas encore branché dans l'application. Pour exposer une documentation interactive, il faudra ajouter `swagger-jsdoc` et `swagger-ui-express`, puis configurer `app.js` pour lire les fichiers du dossier `routes`.
 
@@ -123,5 +135,4 @@ Cette fonction :
 
 ## Points d'Attention Connus
 
-- Le fichier `repositories/categoriresRepository.js` contient une faute de frappe dans son nom : `categorires` au lieu de `categories`.
-- `package.json` contient `"main": "._app.js"`, probablement une faute de frappe pour `app.js`.
+- Après l'ajout de Sequelize dans `package.json`, il faut exécuter `npm install` pour régénérer `package-lock.json`.

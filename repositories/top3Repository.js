@@ -1,20 +1,45 @@
-const fs = require('fs/promises');
-const path = require('path');
-const connection = require('../db/connect.js')
+const { Artisan, City, Specialty, Top } = require('../models');
+
+const serializeTopArtisan = (artisan) => {
+    const plainArtisan = artisan.get({ plain: true });
+
+    return {
+        id_Artisan: plainArtisan.id_Artisan,
+        nom: plainArtisan.nom,
+        note: Number(plainArtisan.note),
+        nom_Ville: plainArtisan.city?.nom_Ville || null,
+        nom_Spécialité: plainArtisan.specialty?.nom_Spécialité || null,
+    };
+};
 
 /**
- * Execute the SQL script that selects the featured top three artisans.
+ * Select the featured top three artisans.
  *
- * @returns {Promise<Array>} Raw MySQL result returned by `mysql2`.
+ * @returns {Promise<Array>} Featured artisans returned by Sequelize.
  */
 exports.get = async () => {
-    
-    const connexion = await connection.initConnect(false);
-    const filePath = path.join(__dirname, '../db/scripts/top_3.sql')    
-    const sql = await fs.readFile(filePath, 'utf-8');            
-    await connexion.changeUser({database: process.env.DATABASE})            
-    const [top] = await connexion.query(sql);    
-    connexion.end();
-    return top;        
-    
-}
+    const top = await Artisan.findAll({
+        include: [
+            {
+                model: City,
+                as: 'city',
+                attributes: ['nom_Ville'],
+            },
+            {
+                model: Specialty,
+                as: 'specialty',
+                attributes: ['nom_Spécialité'],
+            },
+            {
+                model: Top,
+                as: 'top',
+                attributes: [],
+                required: true,
+                where: { top_Value: 'VRAI' },
+            },
+        ],
+        order: [['note', 'DESC']],
+    });
+
+    return top.map(serializeTopArtisan);
+};
