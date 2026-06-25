@@ -10,6 +10,10 @@ var indexRouter = require('./routes/index');
 const top3Router = require('./routes/top3')
 const categoriesRouter = require('./routes/categories')
 const societiesRouter = require('./routes/societies')
+const allowedOrigins = [
+    process.env.FRONT_ORIGIN,
+    process.env.ADMIN_ORIGIN,
+].filter(Boolean);
 
 var app = express();
 
@@ -23,19 +27,21 @@ DB.initDb()
     });
 
 app.use(cors({
-    exposedHeaders: ["Authorization"],
-    origin : (origin, callback) => {
-
-        /*const allowedOrigin = process.env.ALLOWED_ORIGIN;*/
-        const localRegex = /^http:\/\/(localhost|127\.0\.0\.1):\d+$/;
-
-        if(!origin || localRegex.test(origin) /*|| origin === allowedOrigin*/){
+    /*
+     * Only the public frontend and future admin frontend declared in the
+     * environment are allowed to call the API from a browser.
+     */
+    origin: (origin, callback) => {
+        if (allowedOrigins.includes(origin)) {
             return callback(null, true);
         }
 
         return callback(new Error('Origin non authorisée par CORS'));
     },
-    credentials: true
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    exposedHeaders: ["Authorization"],
+    credentials: true,
 }));
 
 app.use(logger('dev'));

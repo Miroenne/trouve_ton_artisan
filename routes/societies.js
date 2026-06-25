@@ -1,6 +1,7 @@
 var express = require("express");
 var router = express.Router();
 const societiesController = require('../controllers/societiesController');
+const { verifyToken } = require('../middlewares/verifyToken');
 
 /**
  * @swagger
@@ -9,6 +10,11 @@ const societiesController = require('../controllers/societiesController');
  *     description: Recherche et affichage des artisans.
  *
  * components:
+ *   securitySchemes:
+ *     cookieAuth:
+ *       type: apiKey
+ *       in: cookie
+ *       name: token
  *   schemas:
  *     SocietyCard:
  *       type: object
@@ -54,8 +60,18 @@ const societiesController = require('../controllers/societiesController');
  *       - Societies
  *   post:
  *     summary: Crée un artisan.
+ *     description: Route protégée par un token JWT stocké dans le cookie `token`.
  *     tags:
  *       - Societies
+ *     security:
+ *       - cookieAuth: []
+ *     responses:
+ *       201:
+ *         description: Artisan créé avec succès.
+ *       401:
+ *         description: Token absent ou invalide.
+ *       400:
+ *         description: Impossible de créer l'artisan.
  *
  * /societies/categorized/{category}:
  *   get:
@@ -83,7 +99,7 @@ const societiesController = require('../controllers/societiesController');
  *         description: Impossible de récupérer les artisans de la catégorie.
  */
 router.get('/', societiesController.getAllSocieties);
-router.post('/', societiesController.createSociety);
+router.post('/', verifyToken, societiesController.createSociety);
 router.get('/categorized/:category', societiesController.getSocietiesByCategory);
 
 /**
@@ -95,16 +111,36 @@ router.get('/categorized/:category', societiesController.getSocietiesByCategory)
  *       - Societies
  *   put:
  *     summary: Met à jour un artisan.
+ *     description: Route protégée par un token JWT stocké dans le cookie `token`.
  *     tags:
  *       - Societies
+ *     security:
+ *       - cookieAuth: []
+ *     responses:
+ *       200:
+ *         description: Artisan mis à jour avec succès.
+ *       401:
+ *         description: Token absent ou invalide.
+ *       400:
+ *         description: Impossible de mettre à jour l'artisan.
  *   delete:
  *     summary: Supprime un artisan.
+ *     description: Route protégée par un token JWT stocké dans le cookie `token`.
  *     tags:
  *       - Societies
+ *     security:
+ *       - cookieAuth: []
+ *     responses:
+ *       204:
+ *         description: Artisan supprimé avec succès.
+ *       401:
+ *         description: Token absent ou invalide.
+ *       400:
+ *         description: Impossible de supprimer l'artisan.
  */
 router.get('/id/:id', societiesController.getSocietyById);
-router.put('/id/:id', societiesController.updateSociety);
-router.delete('/id/:id', societiesController.deleteSociety);
+router.put('/id/:id', verifyToken, societiesController.updateSociety);
+router.delete('/id/:id', verifyToken, societiesController.deleteSociety);
 
 /**
  * @swagger

@@ -1,6 +1,9 @@
-const { Op } = require('sequelize');
+const { Op, fn, col, where } = require('sequelize');
 const { Artisan, City, Specialty, Category, Top } = require('../models');
 
+/**
+ * Common Sequelize includes required to render artisan cards.
+ */
 const cardIncludes = [
     {
         model: City,
@@ -14,6 +17,9 @@ const cardIncludes = [
     },
 ];
 
+/**
+ * Extended Sequelize includes required to render an artisan detail page.
+ */
 const detailIncludes = [
     ...cardIncludes,
     {
@@ -23,6 +29,12 @@ const detailIncludes = [
     },
 ];
 
+/**
+ * Formats a Sequelize Artisan instance for list and card displays.
+ *
+ * @param {import('../models/Artisan')} artisan - Sequelize Artisan instance.
+ * @returns {object} Artisan data used by the frontend card component.
+ */
 const serializeCard = (artisan) => {
     const plainArtisan = artisan.get({ plain: true });
 
@@ -35,6 +47,12 @@ const serializeCard = (artisan) => {
     };
 };
 
+/**
+ * Formats a Sequelize Artisan instance with all detail fields.
+ *
+ * @param {import('../models/Artisan')} artisan - Sequelize Artisan instance.
+ * @returns {object} Artisan data used by the frontend detail page.
+ */
 const serializeDetails = (artisan) => {
     const plainArtisan = artisan.get({ plain: true });
 
@@ -51,6 +69,12 @@ const serializeDetails = (artisan) => {
     };
 };
 
+/**
+ * Normalizes frontend/API payload names to database column names.
+ *
+ * @param {object} payload - Artisan payload received from the service layer.
+ * @returns {object} Payload matching the Artisan Sequelize model.
+ */
 const buildArtisanPayload = (payload) => ({
     nom: payload.nom,
     email: payload.email,
@@ -81,7 +105,7 @@ exports.getAll = async () => {
  * Select societies whose specialty belongs to a matching category.
  *
  * @param {string} category - Category name or partial category name.
- * @returns {Promise<Array>} Society rows returned by Sequelize.
+ * @returns {Promise<Array>} Society rows formatted for card display.
  */
 exports.getSocietiesByCategory = async (category) => {    
 
@@ -121,19 +145,22 @@ exports.getSocietiesByCategory = async (category) => {
 
 
 /**
- * Select societies matching a provided name.
+ * Select societies matching a provided name, without case sensitivity.
  *
- * @param {string} name - Normalized society name or partial society name.
- * @returns {Promise<Array>} Society rows returned by Sequelize.
+ * The query applies LOWER() to the database column and to the searched value so
+ * searches such as "lab", "Lab", and "LAB" return the same matching artisans.
+ *
+ * @param {string} name - Society name or partial society name.
+ * @returns {Promise<Array>} Society rows formatted for detail display.
  */
 exports.getSocietyByName = async (name) => {
 
     const artisans = await Artisan.findAll({
-        where: {
-            nom: {
-                [Op.like]: `%${name.trim()}%`,
-            },
-        },
+        where: where(
+            fn('LOWER', col('nom')),        
+        {            
+            [Op.like]: `%${name.trim().toLowerCase()}%`,            
+        }),
         include: detailIncludes,
         order: [['nom', 'ASC']],
     });
